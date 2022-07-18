@@ -1,12 +1,14 @@
 #include <Arduino.h>
 #include <ArduinoJson.hpp>
 
+const char* msg = "Hello";
+
 void setup() {
 Serial.begin(9600);
+
 }
 
 void loop() {
-  const char* msg = "Hello\n";
-  Serial.write(msg,sizeof(msg));
-  delay(5000);
+  Serial.println(msg);
+  delay(1000);
 }
