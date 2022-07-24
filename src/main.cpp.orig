@@ -1,0 +1,29 @@
+#include <Arduino.h>
+#include <ArduinoJson.hpp>
+
+<<<<<<< HEAD
+struct GameStatus{
+  int round;
+  int ballsThrown;
+  int score;
+  bool pinState[9];
+};
+
+  const char* msg = "Hello";
+
+
+=======
+>>>>>>> parent of 3a6b12a (nothing)
+void setup() {
+Serial.begin(9600);
+}
+
+void loop() {
+<<<<<<< HEAD
+  Serial.write(msg,sizeof(msg)+1);
+=======
+  const char* msg = "Hello\n";
+  Serial.write(msg,sizeof(msg));
+>>>>>>> parent of 3a6b12a (nothing)
+  delay(5000);
+}
