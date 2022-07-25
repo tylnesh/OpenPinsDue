@@ -6,11 +6,20 @@ struct GameStatus{
   int ballsThrown;
   int score;
   bool pinState[9];
+
+
+  void resetPins(){
+    for (int i = 0; i<9; i++) {
+      pinState[i] = false;
+    }
+  }
 };
 
 //const char* msg = "Hello";
 
 GameStatus status;
+void simulateThrow(GameStatus &status);
+
 
 void setup() {
   Serial.begin(9600);
@@ -20,26 +29,15 @@ void setup() {
   for (int i = 0; i<9; i++) {
     status.pinState[i] = false;
   }
+
+    randomSeed(analogRead(0));
 }
 
 void loop() {
-  // Serial.write(msg,sizeof(msg)+1);
 
-    // Values we want to transmit
-  long timestamp = millis();
-
-  // // Print the values on the "debug" serial port
-  // Serial.print("timestamp = ");
-  // Serial.println(timestamp);
-  // Serial.print("value = ");
-  // Serial.println(value);
-  // Serial.println("---");
-
-  // Create the JSON document
-  StaticJsonDocument<200> doc;
-  doc["timestamp"] = timestamp;
-  // JsonObject gameStatusJson;
-  // gameStatusJson.
+  // long timestamp = millis();
+  StaticJsonDocument<400> doc;
+  // doc["timestamp"] = timestamp;
   doc["round"] = status.round;
   doc["ballsThrown"] = status.ballsThrown;
   doc["score"] = status.score;
@@ -55,7 +53,29 @@ void loop() {
 
   // Send the JSON document over the "link" serial port
   serializeJson(doc, Serial);
+  Serial.write((byte)0x0B);
+  Serial.write((byte)0x65);
 
   // Wait
   delay(5000);
+
+
+  simulateThrow(status);
 }
+
+
+void simulateThrow(GameStatus &status) {
+  status.resetPins();
+  status.ballsThrown++;
+  delay(4000);
+  for (int i = 0; i<9; i++) {
+    if(random(0,2)) {
+      status.pinState[i] = true;
+      status.score++;
+    }
+  }
+}
+
+
+
+
