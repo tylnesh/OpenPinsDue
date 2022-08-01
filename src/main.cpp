@@ -57,7 +57,7 @@ void loop() {
   Serial.write((byte)0x65);
 
   // Wait
-  delay(5000);
+  delay(2000);
 
 
   simulateThrow(status);
@@ -67,7 +67,7 @@ void loop() {
 void simulateThrow(GameStatus &status) {
   status.resetPins();
   status.ballsThrown++;
-  delay(4000);
+  delay(1000);
   for (int i = 0; i<9; i++) {
     if(random(0,2)) {
       status.pinState[i] = true;
