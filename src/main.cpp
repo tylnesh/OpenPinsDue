@@ -1,27 +1,21 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include "GameStatus.hpp"
 
-struct GameStatus{
-  int round;
-  int ballsThrown;
-  int score;
-  bool pinState[9];
+#define SIMULATOR
 
-
-  void resetPins(){
-    for (int i = 0; i<9; i++) {
-      pinState[i] = false;
-    }
-  }
-};
+#ifndef SIMULATOR
+  #include "IOPins.hpp"
+#endif
 
 //const char* msg = "Hello";
 
 GameStatus status;
 void simulateThrow(GameStatus &status);
 
-
+#ifdef SIMULATOR
 void setup() {
+  
   Serial.begin(9600);
   status.round = 0;
   status.ballsThrown = 0;
@@ -29,14 +23,13 @@ void setup() {
   for (int i = 0; i<9; i++) {
     status.pinState[i] = false;
   }
-
     randomSeed(analogRead(0));
 }
 
 void loop() {
 
-  // long timestamp = millis();
   StaticJsonDocument<400> doc;
+  // long timestamp = millis();
   // doc["timestamp"] = timestamp;
   doc["round"] = status.round;
   doc["ballsThrown"] = status.ballsThrown;
@@ -58,8 +51,6 @@ void loop() {
 
   // Wait
   delay(2000);
-
-
   simulateThrow(status);
 }
 
@@ -75,6 +66,15 @@ void simulateThrow(GameStatus &status) {
     }
   }
 }
+#else
+void setup(){
+
+}
+void loop(){
+
+}
+
+#endif
 
 
 
