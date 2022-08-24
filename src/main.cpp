@@ -10,8 +10,10 @@
 
 //const char* msg = "Hello";
 
+byte messageDelimiter[] = {(byte)0x0B, (byte)0x65};
 GameStatus status;
 void simulateThrow(GameStatus &status);
+void sendStatus(GameStatus &status);
 
 #ifdef SIMULATOR
 void setup() {
@@ -28,30 +30,15 @@ void setup() {
 
 void loop() {
 
-  StaticJsonDocument<400> doc;
-  // long timestamp = millis();
-  // doc["timestamp"] = timestamp;
-  doc["round"] = status.round;
-  doc["ballsThrown"] = status.ballsThrown;
-  doc["score"] = status.score;
-
-  const size_t CAPACITY = JSON_ARRAY_SIZE(9);
-  StaticJsonDocument<CAPACITY> pinStateDoc;
-
-  JsonArray pinStateArray = pinStateDoc.to<JsonArray>();
-  for (int i = 0; i<9; i++) {
-    pinStateArray.add(status.pinState[i]);
-  }
-  doc["pinState"] = pinStateArray;
-
-  // Send the JSON document over the "link" serial port
-  serializeJson(doc, Serial);
-  Serial.write((byte)0x0B);
-  Serial.write((byte)0x65);
-
-  // Wait
-  delay(2000);
+  delay(1000);
   simulateThrow(status);
+
+//   for (int i = 0; i<9; i++) {
+//   Serial.print(status.pinState[i]);
+//  }
+
+
+  sendStatus(status);
 }
 
 
@@ -65,6 +52,26 @@ void simulateThrow(GameStatus &status) {
       status.score++;
     }
   }
+}
+
+
+void sendStatus(GameStatus &status) {
+ StaticJsonDocument<500> doc;
+ JsonObject message = doc.to<JsonObject>();
+
+ message["command"] = 24;
+ JsonObject jsonStatus = message.createNestedObject("status");
+ jsonStatus["round"] = status.round;
+ jsonStatus["ballsThrown"] = status.ballsThrown;
+ jsonStatus["score"] = status.score;
+ JsonArray pinStateArray = jsonStatus.createNestedArray("pinState");
+ for (int i = 0; i<9; i++) {
+  pinStateArray.add(status.pinState[i]);
+ }
+
+ serializeJson(message, Serial);
+ Serial.write((byte)0x0B);
+ Serial.write((byte)0x65);
 }
 #else
 void setup(){
